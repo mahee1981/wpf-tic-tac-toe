@@ -19,18 +19,27 @@ namespace GUITicTacToe
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+            
         }
 
         private void GridBoxClick(object sender, RoutedEventArgs e)
         {
             var myButton = e.Source as ToggleButton;
-            myButton.Content = "ok";
+
+            myButton.Content = TicTacToe.Game.ReadInput(myButton.Tag.ToString());
+
             myButton.IsEnabled = false;
+            if (!TicTacToe.Game.IsActive)
+            {
+                MessageBox.Show(TicTacToe.Game.EndGame());
+            }
         }
         private void ResetGameClick(object sender, RoutedEventArgs e)
         {
@@ -40,6 +49,7 @@ namespace GUITicTacToe
                 gridSlot.IsChecked = false;
                 gridSlot.Content = "";
             }
+            TicTacToe.Game.Reset();
         }
 
     }

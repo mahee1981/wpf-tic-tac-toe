@@ -3,190 +3,148 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GUITicTacToe
 {
-        public class TicTacToe
+    public sealed class TicTacToe
+    {
+        private string[,] board;
+        int result;
+        int round;
+        private static TicTacToe instance = null;
+        public bool IsActive { get; set; }
+
+
+        private TicTacToe()
         {
-            private string[,] board;
-            int result;
-
-
-            public TicTacToe()
+            this.board = new string[3, 3]
             {
-                this.board = new string[3, 3]
-                {
                 {"1", "2", "3" },
                 {"4", "5", "6" },
                 {"7", "8", "9" }
-                };
+            };
 
-                this.result = 0;
-            }
-            private int CheckBoard()
+            this.result = 0;
+            this.round = 0;
+            this.IsActive = true;
+        }
+
+        public static TicTacToe Game
+        {
+            get
             {
-                for (int i = 0; i < board.GetLength(0); i++)
+                if(instance == null)
                 {
-                    string firstEntry = board[i, i];
-                    if (!firstEntry.Equals("X") && !firstEntry.Equals("O"))
-                    {
-                        continue;
-                    }
-                    int horiznotalCount = 0, verticalCount = 0, mainDiagonalCount = 0, sideDiagonalCount = 0;
-                    for (int j = 0; j < board.GetLength(1); j++)
-                    {
-                        if (board[i, j].Equals(firstEntry))
-                        {
-                            horiznotalCount++;
-                        }
-                        if (board[j, i].Equals(firstEntry))
-                        {
-                            verticalCount++;
-                        }
-                        if (i == 1 && board[j, j].Equals(firstEntry))
-                        {
-                            mainDiagonalCount++;
-
-                        }
-                        if (i == 1 && board[j, 2 - j].Equals(firstEntry))
-                        {
-                            sideDiagonalCount++;
-                        }
-                    }
-                    if (horiznotalCount == 3 || verticalCount == 3 || mainDiagonalCount == 3 || sideDiagonalCount == 3)
-                    {
-                        if (firstEntry.Equals("O"))
-                            return 1;
-                        else
-                            return 2;
-                    }
-
+                    instance = new TicTacToe();
                 }
-                return 0;
+                return instance;
             }
-            private void DrawBoard()
+        }
+        private int CheckBoard()
+        {
+            for (int i = 0; i < board.GetLength(0); i++)
             {
-                for (int i = 0; i < 3 * 3 + 2; i++)
+                string firstEntry = board[i, i];
+                if (!firstEntry.Equals("X") && !firstEntry.Equals("O"))
                 {
-                    for (int j = 0; j < 3 * 3 + 2; j++)
-                    {
-                        if (i % 4 == 1 && j % 4 == 1)
-                            Console.Write(board[i / 4, j / 4]);
-
-                        else if ((j + 1) % 4 == 0)
-                            Console.Write("|");
-
-                        else if ((i + 1) % 4 == 0)
-                            Console.Write("\u2014");
-
-                        else
-                            Console.Write(" ");
-                    }
-                    Console.WriteLine();
+                    continue;
                 }
-            }
-            private bool InputValidation(string input)
-            {
-                if (input.Length > 1 || !char.IsDigit(char.Parse(input)))
-                    Console.WriteLine("Please enter a number!");
-
-                else
+                int horiznotalCount = 0, verticalCount = 0, mainDiagonalCount = 0, sideDiagonalCount = 0;
+                for (int j = 0; j < board.GetLength(1); j++)
                 {
-                    foreach (string field in board)
+                    if (board[i, j].Equals(firstEntry))
                     {
-                        if (field.Equals(input))
-                            return true;
+                        horiznotalCount++;
+                    }
+                    if (board[j, i].Equals(firstEntry))
+                    {
+                        verticalCount++;
+                    }
+                    if (i == 1 && board[j, j].Equals(firstEntry))
+                    {
+                        mainDiagonalCount++;
+
+                    }
+                    if (i == 1 && board[j, 2 - j].Equals(firstEntry))
+                    {
+                        sideDiagonalCount++;
                     }
                 }
-                Console.WriteLine("Incorrect input! Please use another field!");
-                return false;
-            }
-            private void UpdateValue(string order, string fieldValue)
-            {
-                for (int i = 0; i < board.GetLength(0); i++)
+                if (horiznotalCount == 3 || verticalCount == 3 || mainDiagonalCount == 3 || sideDiagonalCount == 3)
                 {
-                    for (int j = 0; j < board.GetLength(1); j++)
-                    {
-                        if (board[i, j].Equals(order))
-                            board[i, j] = fieldValue;
-                    }
-                }
-            }
-            private void PlayGame()
-            {
-                for (int i = 0; i < 9; i++)
-                {
-                    this.DrawBoard();
-                    string input;
-
-                    do
-                    {
-                        if (i % 2 == 0)
-                            Console.Write("Player 1: ");
-                        else
-                            Console.Write("Player 2: ");
-
-                        Console.Write("Choose your field!");
-                        input = Console.ReadLine();
-
-                    } while (!this.InputValidation(input));
-
-                    string fieldValue;
-
-                    if (i % 2 == 0)
-                        fieldValue = "O";
+                    if (firstEntry.Equals("O"))
+                        return 1;
                     else
-                        fieldValue = "X";
-
-                    this.UpdateValue(input, fieldValue);
-                    Console.Clear();
-                    result = this.CheckBoard();
-                    if (result != 0)
-                        break;
-                }
-            }
-            private void EndGame()
-            {
-                this.DrawBoard();
-                switch (result)
-                {
-                    case 0:
-                        Console.WriteLine("It's a draw!");
-                        break;
-                    case 1:
-                        Console.WriteLine("Player 1 has won!");
-                        break;
-                    case 2:
-                        Console.WriteLine("Player 2 has won!");
-                        break;
+                        return 2;
                 }
 
             }
-            private void Reset()
+            return 0;
+        }
+        private void UpdateValue(string fieldNumber, string fieldValue)
+        {
+            for (int i = 0; i < board.GetLength(0); i++)
             {
-
-                Console.WriteLine("Press any Key to Reset The Game");
-                Console.ReadKey();
-                Console.Clear();
-                this.board = new string[3, 3]
+                for (int j = 0; j < board.GetLength(1); j++)
                 {
-                {"1", "2", "3" },
-                {"4", "5", "6" },
-                {"7", "8", "9" }
-                };
-                this.result = 0;
-            }
-            public void Play()
-            {
-                while (true)
-                {
-                    this.PlayGame();
-                    this.EndGame();
-                    this.Reset();
+                    if (board[i, j].Equals(fieldNumber))
+                        board[i, j] = fieldValue;
                 }
+            }
+        }
+        public string ReadInput(string fieldNumber)
+        {
+            string fieldValue;
+
+            if (round % 2 == 0)
+                fieldValue = "O";
+            else
+                fieldValue = "X";
+
+            this.UpdateValue(fieldNumber, fieldValue);
+
+            if(round > 2)
+                result = this.CheckBoard();
+
+            if (result != 0 || round == 8)
+                IsActive = false;
+
+            round++;
+
+            return fieldValue;
+                
+        }
+        public string EndGame()
+        { 
+            switch (result)
+            {
+                case 0:
+                    return "It's a draw!";
+                    
+                case 1:
+                    return "Player 1 has won!";
+                 
+                case 2:
+                    return "Player 2 has won!";
+
+                default:
+                    return "";
             }
 
         }
-    
+        public void Reset()
+        {
+            this.board = new string[3, 3]
+            {
+                {"1", "2", "3" },
+                {"4", "5", "6" },
+                {"7", "8", "9" }
+            };
+            this.result = 0;
+            this.round = 0;
+            this.IsActive = true;
+        }
+    }
 
 }
